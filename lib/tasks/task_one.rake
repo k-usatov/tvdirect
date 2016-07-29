@@ -3,7 +3,7 @@ require 'nokogiri'
 
 namespace :task_one do
 	task :receiv_category => :environment do
-		path = 'http://www.tvdirect.tv/'
+		path = 'http://www.tvdirect.tv/?___store=en&___from_store=th'
 		html = open(path)
 		page = Nokogiri::HTML(html)
 		
@@ -17,14 +17,14 @@ namespace :task_one do
 			category = Category.new
 			category.url=link['href']
 			category.title=link.text
+			category.parent_id=category.title
 			category.save
-		end
-				
-		page.css("div#header-nav-custom.skip-content a.level0.has-children").each do |link|
-			category = Category.new
-			category.url=link['href']
-			category.title=link.text
-			category.save
+						
+			page.css("div#header-nav-custom.skip-content a.level1.has-children").each do |link1|
+				category.url = link1['href']
+				category.title=link1.text		
+				category.save				
+			end
 		end
 		
 		category.save
